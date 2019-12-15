@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace：名称空间；写接口的全类名，告诉MyBatis这个配置文件是实现哪一个接口的-->
+<mapper namespace="com.yejh.dao.KeyDao">
+    <!--和别的dao共用一块缓存-->
+    <cache-ref namespace="com.yejh.dao.EmployeeDao"/>
+
+    <select id="getKeyById" resultMap="myKey">
+        select k.id kid, k.keyName, k.lockId, l.id lid, l.lockName
+        from t_key k
+        left JOIN t_lock l ON k.lockId=l.id
+        where k.id=#{id}
+    </select>
+
+    <!--List<Key> getKeysByLockId(int id);-->
+    <select id="getKeysByLockId" resultType="com.yejh.bean.Key">
+        select * from t_key where lockId=#{id}
+    </select>
+
+    <!--自定义封装规则，使用级联属性封装联合查询的结果-->
+    <!--    <resultMap id="myKey" type="com.yejh.bean.Key">-->
+    <!--        <id property="id" column="id"/>-->
+    <!--        <result property="keyName" column="keyName"/>-->
+    <!--        <result property="lock.id" column="lid"/>-->
+    <!--        <result property="lock.lockName" column="lockName"/>-->
+    <!--    </resultMap>-->
+
+    <!--方式二：mybatis推荐的<association>-->
+    <resultMap id="myKey" type="com.yejh.bean.Key">
+        <id property="id" column="id"/>
+        <result property="keyName" column="keyName"/>
+        <association property="lock" javaType="com.yejh.bean.Lock">
+            <id property="id" column="lid"/>
+            <result property="lockName" column="lockName"/>
+        </association>
+    </resultMap>
+
+
+</mapper>

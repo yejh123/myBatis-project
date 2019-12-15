@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<!--全局配置文件
+元素类型为 "configuration" 的内容必须匹配
+"(properties?,settings?,typeAliases?,typeHandlers?,
+objectFactory?,objectWrapperFactory?,reflectorFactory?,
+plugins?,environments?,databaseIdProvider?,mappers?)"-->
+
+<configuration>
+    <!--1、resource：从类路径下开始引用
+    url：应用磁盘路径或者网络路径的资源-->
+    <properties resource="dbconfig.properties"/>
+
+    <!--2、设置-->
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+
+        <!--延迟加载-->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <!--属性按需加载-->
+        <setting name="aggressiveLazyLoading" value="false"/>
+
+        <!--开启全局缓存开关-->
+        <setting name="cacheEnabled" value="true"/>
+
+    </settings>
+
+    <!--3、类型别名，为常用的类型（javabean）起别名
+    alias=""指定一个别名
+    但是依旧推荐不起别名，直接用全类名-->
+    <typeAliases>
+        <!--        <typeAlias type="com.yejh.bean.Employee" />-->
+        <!--批量起别名；name=包名，默认别名就是类名，可以在类中添加Alias注解指定别名-->
+        <package name="com.yejh.bean"/>
+    </typeAliases>
+
+    <!--4、typeHandler类型处理器-->
+    <!--    <typeHandlers>-->
+    <!--        <typeHandler handler=""/>-->
+    <!--    </typeHandlers>-->
+
+    <!--5、插件plugin-->
+
+
+    <environments default="development">
+        <!--每一个环境都需要一个事务处理器和一个数据源
+        数据源和事务管理器应该都由spring管理-->
+
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <!--配置连接池-->
+            <dataSource type="POOLED">
+                <property name="driver" value="${driverclass}"/>
+                <property name="url" value="${jdbcurl}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <!--6、databaseIdProvider支持数据库移植性-->
+    <databaseIdProvider type="DB_VENDOR">
+        <!--name为数据库厂商标识，value：给这个标识起一个别名-->
+        <property name="MySQL" value="mysql"/>
+        <property name="Oracle" value="orcl"/>
+    </databaseIdProvider>
+
+    <!--7、mappers
+    注册自己编写的每一个接口的实现文件-->
+    <mappers>
+        <!--resource表示从类路径下找资源
+        url：可以从磁盘或者网络路径引用
+        resource：在类路径下找sql映射文件
+        class：直接引用接口的全类名；可以将xml放在和dao接口同目录下，而且文件名和接口名一致-->
+        <!--        <mapper resource="mybatis/EmployeeDao.xml"/>-->
+        <!--        <mapper class="com.yejh.dao.EmployeeDaoAnnotation"/>-->
+        <!--重要的dao可以配置，简单的dao就直接写注解-->
+
+
+        <!--批量注册-->
+        <package name="com.yejh.dao"/>
+    </mappers>
+</configuration>

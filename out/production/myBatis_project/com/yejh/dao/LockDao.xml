@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace：名称空间；写接口的全类名，告诉MyBatis这个配置文件是实现哪一个接口的-->
+<mapper namespace="com.yejh.dao.LockDao">
+
+    <select id="getLockById" resultMap="myLock">
+        select l.id id, l.lockName, k.id kid, k.keyName, k.lockId
+        from t_lock l
+        left JOIN t_key k on l.id=k.lockId
+        where l.id=#{id};
+    </select>
+
+    <!--分步查询-->
+    <select id="getLockByIdByStep" resultMap="myLockByStep">
+        select * from t_lock where id=#{id}
+    </select>
+
+    <resultMap id="myLock" type="com.yejh.bean.Lock">
+        <id property="id" column="id"/>
+        <result property="lockName" column="lockName"/>
+        <!--Collection定义集合元素的封装
+        property指定哪个属性是集合属性
+        javaType指定对象类型
+        ofType指定集合里面元素的类型-->
+        <collection property="keys" ofType="com.yejh.bean.Key">
+            <!--指定集合中这个元素的封装规则-->
+            <id property="id" column="kid"/>
+            <result property="keyName" column="keyName"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="myLockByStep" type="com.yejh.bean.Lock">
+        <id property="id" column="id"/>
+        <result property="lockName" column="lockName"/>
+        <collection property="keys"
+                    ofType="com.yejh.bean.Key"
+                    select="com.yejh.dao.KeyDao.getKeysByLockId"
+                    column="{id=id}">
+        </collection>
+    </resultMap>
+
+</mapper>
